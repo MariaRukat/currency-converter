@@ -1,9 +1,7 @@
 # Currency converter
 
-A simple app which allows you to convert currencies and see the history of your conversions. It uses API: https://www.currencyconverterapi.com/ 
-
-## Demo
-    Link: 
+A simple app which allows you to convert currencies and see the history of your conversions. <br/>
+It uses API: https://www.currencyconverterapi.com/ 
     
 ## Technologies
 
