@@ -1,58 +1,59 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { H2 } from './styledElements/H2';
-import { Button } from './styledElements/Button';
-import { ButtonContainer } from './styledElements/ButtonContainer';
 import { EmptyList } from './styledElements/EmptyList';
 import { Table } from './styledElements/Table';
+import { TableContainer } from './styledElements/TableContainer';
+import { ClearHistoryButton } from './styledElements/ClearHistoryButton';
 import { STORAGE_KEY } from '../utils/localStorageKey';
+import { RightArrowIcon } from '../icons/RightArrowIcon';
+import { testLocalStorage } from '../utils/testLocalStorage';
+import { HistoryLink } from './styledElements/HistoryLink';
+import { CloseIcon } from '../icons/CloseIcon';
 
 export const HistoryConversions = props => {
   const { conversionsList, setConversionsHistory } = props;
 
-  const resetHistory = () => {
+  const clearHistory = () => {
     setConversionsHistory([]);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    if (testLocalStorage()) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    }
   };
 
   return (
     <>
-      <H2>Historyczne konwersje</H2>
+      <HistoryLink to="/"><CloseIcon /> Historia</HistoryLink>
+      <TableContainer>
+        <Table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th className="curr">Przed konwersją</th>
+              <td/>
+              <th className="curr">Po konwersji</th>
+            </tr>
+          </thead>
+          <tbody>
+            {conversionsList.map(({ currFrom, currTo, amountFrom, result, date}) => {
+              const dateFormatted = new Date(date).toLocaleDateString();
+              return (
+                <tr key={date}>
+                  <td>{dateFormatted}</td>
+                  <td className="curr">{amountFrom} {currFrom}</td>
+                  <td>
+                    <span className="arrow"><RightArrowIcon /></span>
+                  </td>
+                  <td className="currTo">{result} {currTo}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </Table>
+      </TableContainer>
       {!conversionsList.length && <EmptyList />}
-      {!!conversionsList.length && (
-        <>
-          <ButtonContainer>
-            <Button light onClick={resetHistory}>
-              Wyczyść historię
-            </Button>
-          </ButtonContainer>
-          <Table>
-            <thead>
-              <tr>
-                <th>Kwota</th>
-                <th>Waluta źrodłowa</th>
-                <th>Wynik</th>
-                <th>Waluta docelowa</th>
-                <th>Data</th>
-              </tr>
-            </thead>
-            <tbody>
-              {conversionsList.map(({ currFrom, currTo, amountFrom, result, date}) => {
-                const dateFormatted = new Date(date).toLocaleString();
-                return (
-                  <tr key={date}>
-                    <td className="numberCell">{amountFrom}</td>
-                    <td>{currFrom}</td>
-                    <td className="numberCell">{result}</td>
-                    <td>{currTo}</td>
-                    <td>{dateFormatted}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </Table>
-        </>
-      )}
+      <ClearHistoryButton onClick={clearHistory} disabled={!conversionsList.length}>
+        Wyczyść historię
+      </ClearHistoryButton>
     </>
   );
 };

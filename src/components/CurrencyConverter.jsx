@@ -1,39 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { Form, Field } from 'react-final-form';
 import { H2 } from './styledElements/H2';
-import { Button } from './styledElements/Button';
+import { ConvertButton } from './styledElements/ConvertButton';
 import { Loader } from './styledElements/Loader';
 import { FormStyles } from './styledElements/FormStyles';
 import { API_KEY, API_URL } from '../utils/apiConstants';
+import { ArrowIcon } from '../icons/ArrowIcon';
 
 const initialValues = {
   currFrom: 'PLN',
-  amount: 0,
-  currTo: 'EUR'
+  amount: '',
+  currTo: 'USD'
 };
 
 const validate = values => {
   const errors = {};
 
-  if (values.currFrom === values.currTo) {
-    errors.currFrom = 'Wybrałeś dwie takie same waluty.';
-  }
-  if (values.amount <= 0) {
-    errors.amount = 'Podaj kwotę większą od 0.';
-  }
   const amountIsNum = (new RegExp('[0-9]')).test(values.amount);
   if (!amountIsNum) {
-    errors.amount = 'Wpisz liczbę.';
+    errors.amount = 'Nieprawidłowa wartość';
   }
-
   return errors;
 };
 
 export const CurrencyConverter = props => {
   const history = useHistory();
   const { currenciesList } = props;
+  const [result, setResult] = useState('');
 
   const onSubmit = async values => {
     const { currFrom, currTo, amount } = values;
@@ -45,6 +40,7 @@ export const CurrencyConverter = props => {
 
     const result = data[query] * Number(amount);
     const fixedResult = result.toFixed(2);
+    setResult(fixedResult);
 
     props.addToHistory({
       currFrom,
@@ -59,7 +55,7 @@ export const CurrencyConverter = props => {
 
   return (
     <>
-      <H2>Przelicznik walut</H2>
+      <H2>Konwerter walut</H2>
 
       {!currenciesList.length && <Loader />}
 
@@ -68,52 +64,65 @@ export const CurrencyConverter = props => {
           onSubmit={onSubmit}
           initialValues={initialValues}
           validate={validate}
-          render={({ handleSubmit }) => (
+          render={({ handleSubmit, submitting, values }) => (
             <FormStyles onSubmit={handleSubmit}>
-              <label>Z waluty:</label>
-              <Field name="currFrom">
-                {({ input, meta}) => (
-                  <div className="inputBox">
-                    <select {...input} >
-                      {currenciesList.map(currency => (
-                        <option value={currency.id} key={currency.id}>
-                          {currency.id} ({currency.currencyName})
-                        </option>
-                      ))}
-                    </select>
-                    {meta.error && <span>{meta.error}</span>}
-                  </div>
-                )}
-              </Field>
-
-              <label>Kwota:</label>
               <Field name="amount">
                 {({ input, meta }) => (
-                  <div className="inputBox">
-                    <input {...input} type="number"/>
-                    {meta.error && meta.touched && <span>{meta.error}</span>}
-                  </div>
-                )}
-              </Field>
-
-              <label>Na walutę:</label>
-              <Field name="currTo">
-                {({ input, meta}) => (
                     <div className="inputBox">
-                      <select {...input} >
-                        {currenciesList.map(currency => (
-                            <option value={currency.id} key={currency.id}>
-                              {currency.id} ({currency.currencyName})
-                            </option>
-                        ))}
-                      </select>
-                      {meta.error && <span>{meta.error}</span>}
+                      <input {...input} placeholder="Wpisz kwotę"/>
+                      <span>{values.currFrom}</span>
+                      {meta.error && meta.touched && <span className="error">{meta.error}</span>}
                     </div>
                 )}
               </Field>
 
-              <div/>
-              <Button type="submit">Konwertuj</Button>
+              <div className="inputBox">
+                {!result ? (
+                    <span className="resultText">Wynik</span>
+                ) : (
+                    <span className="result">{result}</span>
+                )}
+                <span>{values.currTo}</span>
+              </div>
+
+              <div className="currencies">
+                <Field name="currFrom">
+                  {({ input}) => (
+                      <>
+                        <select {...input} >
+                          {currenciesList.map(currency => (
+                              <option value={currency.id} key={currency.id}>
+                                {currency.id}
+                              </option>
+                          ))}
+                        </select>
+                      </>
+                  )}
+                </Field>
+
+                <div>
+                  <ArrowIcon />
+                  <div className="icon-rotate"><ArrowIcon/></div>
+                </div>
+
+                <Field name="currTo">
+                  {({ input}) => (
+                      <>
+                        <select {...input} >
+                          {currenciesList.map(currency => (
+                              <option value={currency.id} key={currency.id}>
+                                {currency.id}
+                              </option>
+                          ))}
+                        </select>
+                      </>
+                  )}
+                </Field>
+              </div>
+
+              <ConvertButton type="submit" disabled={submitting || !values.amount}>
+                Konwertuj
+              </ConvertButton>
             </FormStyles>
           )}
         />

@@ -2,17 +2,21 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { GlobalStyles} from './styles/GlobalStyles';
 import { Main } from './components/Main';
-import { Navigation } from './components/Navigation';
-import { Container } from './components/styledElements/Container';
+import { Background } from './components/styledElements/Background';
+import { ContainerCenter } from './components/styledElements/ContainerCenter';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export const App = () => (
   <>
     <GlobalStyles />
-    <BrowserRouter>
-      <Navigation />
-      <Container>
-        <Main />
-      </Container>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Background>
+          <ContainerCenter>
+            <Main />
+          </ContainerCenter>
+        </Background>
+      </BrowserRouter>
+    </ErrorBoundary>
   </>
 );
