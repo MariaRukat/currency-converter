@@ -1,26 +1,22 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter } from 'react-router-dom';
+import { GlobalStyles} from './styles/GlobalStyles';
+import { Main } from './components/Main';
+import { Background } from './components/styledElements/Background';
+import { ContainerCenter } from './components/styledElements/ContainerCenter';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
-export default App;
+export const App = () => (
+  <>
+    <GlobalStyles />
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Background>
+          <ContainerCenter>
+            <Main />
+          </ContainerCenter>
+        </Background>
+      </BrowserRouter>
+    </ErrorBoundary>
+  </>
+);
