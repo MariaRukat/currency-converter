@@ -9,5 +9,5 @@ export const ContainerHistoryHidden = styled.div`
   border-radius: 20px;
   position: absolute;
   top: 0;
-  left: 50%;
+  left: 515px;
 `;

@@ -14,5 +14,5 @@ export const ContainerHistory = styled.div`
   align-items: center;
   position: absolute;
   top: 0;
-  left: 50%;
+  left: 500px;
 `;
